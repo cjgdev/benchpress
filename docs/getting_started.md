@@ -1,0 +1,49 @@
+# Getting Started
+
+## Writing benchmarks
+
+A simple benchmark looks like this:
+
+```cpp
+BENCHMARK("example") {
+	for (size_t i = 0; i < b->get_num_iterations(); ++i) {
+		std::cout << "hello" << std::endl;
+	}
+}
+```
+
+Every benchmark function is passed a parameter `benchpress::context* b`. The target code must be executed n 
+(`b->get_num_iterations()`) times. The value n is adjusted until the benchmark runs long enough to be timed reliably.
+
+The example will produce the following output:
+
+```
+example          500000        2353 ns/op
+```
+
+The output shows that the code was run 500000 times, and each cycle lasted 2353 nanoseconds.
+
+If a benchmark performs some expensive setup before running the timer may be reset:
+
+```cpp
+BENCHMARK("expensive setup") {
+	setup_expensive();
+	b->reset_timer();
+	for (size_t i = 0; i < b->get_num_iterations(); ++i) {
+		test_func();
+	}
+}
+```
+
+If a benchmark needs to check performance in a parallel setting, it may use the run_parallel helper function, which is
+intended to be used with the -cpu command line option.
+
+```cpp
+BENCHMARK("parallel benchmark") {
+	b->run_parallel([](benchpress::parallel_context* pb) {
+		while (pb->next()) {
+			
+		}
+	}
+}
+```
