@@ -12,14 +12,14 @@ BENCHMARK("fib 10") {
     }
 }
 
-BENCHMARK("fib 11") {
+BENCHMARK("fib 15") {
     for (size_t i = 0; i < b->num_iterations(); ++i) {
-        fib(11);
+        fib(15);
     }
 }
 
-BENCHMARK("fib 12") {
+BENCHMARK("fib 20") {
     for (size_t i = 0; i < b->num_iterations(); ++i) {
-        fib(12);
+        fib(20);
     }
 }

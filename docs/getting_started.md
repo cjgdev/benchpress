@@ -18,10 +18,10 @@ Every benchmark function is passed a parameter `benchpress::context* b`. The tar
 The example will produce the following output:
 
 ```
-example          500000        2353 ns/op
+example          1000000        1165 ns/op
 ```
 
-The output shows that the code was run 500000 times, and each cycle lasted 2353 nanoseconds.
+The output shows that the code was run 1000000 times, and each cycle lasted 1165 nanoseconds.
 
 If a benchmark performs some expensive setup before running the timer may be reset:
 
@@ -42,7 +42,7 @@ intended to be used with the -cpu command line option.
 BENCHMARK("parallel benchmark") {
 	b->run_parallel([](benchpress::parallel_context* pb) {
 		while (pb->next()) {
-			
+            std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 	}
 }

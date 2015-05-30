@@ -152,7 +152,8 @@ public:
         if (d_num_iterations <= 0 || d_duration.count() <= 0 || d_num_bytes <= 0) {
             return 0;
         }
-        return (double(d_num_bytes) * d_num_iterations / 1e6); // todo: scale by duration in seconds
+        return ((double(d_num_bytes) * double(d_num_iterations) / double(1e6)) /
+                double(std::chrono::duration_cast<std::chrono::seconds>(d_duration).count()));
     }
 
     std::string to_string() const {
@@ -160,11 +161,26 @@ public:
         tmp << std::setw(12) << std::right << d_num_iterations;
         size_t npo = get_ns_per_op();
         tmp << std::setw(12) << std::right << npo << std::setw(0) << " ns/op";
-        size_t mbs = get_mb_per_s();
-        if (mbs != 0) {
+        double mbs = get_mb_per_s();
+        if (mbs > 0.0) {
             tmp << std::setw(12) << std::right << mbs << std::setw(0) << " MB/s";
         }
         return std::string(tmp.str());
+    }
+};
+
+/*
+ *
+ */
+class parallel_context {
+    std::atomic_intmax_t d_num_iterations;
+public:
+    parallel_context(size_t num_iterations)
+        : d_num_iterations(num_iterations)
+    {}
+
+    bool next() {
+        return (d_num_iterations.fetch_sub(1) > 0);
     }
 };
 
@@ -234,11 +250,12 @@ public:
         stop_timer();
     }
 
-    void run_parallel(std::function<void(context*)> f) {
+    void run_parallel(std::function<void(parallel_context*)> f) {
+        parallel_context pc(d_num_iterations);
         std::vector<std::thread> threads;
         for (size_t i = 0; i < d_num_threads; ++i) {
-            threads.push_back(std::thread([this,&f]() -> void {
-                f(this);
+            threads.push_back(std::thread([&pc,&f]() -> void {
+                f(&pc);
             }));
         }
         for(auto& thread : threads){
