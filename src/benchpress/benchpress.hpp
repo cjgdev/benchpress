@@ -36,7 +36,17 @@
 namespace benchpress {
 
 /*
+ * The options class encapsulates all options for running benchmarks.
  *
+ * When including benchpress, a main function can be emitted which includes a command-line parser for building an
+ * options object. However from time-to-time it may be necessary for the developer to have to build their own main
+ * stub and construct the options object manually.
+ *
+ * options opts;
+ * opts
+ *     .bench(".*")
+ *     .benchtime(1)
+ *     .cpu(4);
  */
 class options {
     std::string d_bench;
@@ -73,6 +83,13 @@ public:
 
 class context;
 
+/*
+ * The benchmark_info class is used to store a function name / pointer pair.
+ *
+ * benchmark_info bi("example", [](benchpress::context* b) {
+ *     // benchmark function
+ * });
+ */
 class benchmark_info {
     std::string                   d_name;
     std::function<void(context*)> d_func;
@@ -87,6 +104,12 @@ public:
     std::function<void(context*)> get_func() const { return d_func; }
 };
 
+/*
+ * The registration class is responsible for providing a single global point of reference for registering
+ * benchmark functions.
+ *
+ * registration::get_ptr()->register_benchmark(info);
+ */
 class registration {
     static registration*        d_this;
     std::vector<benchmark_info> d_benchmarks;
@@ -106,6 +129,9 @@ public:
     std::vector<benchmark_info> get_benchmarks() { return d_benchmarks; }
 };
 
+/*
+ * The auto_register class is a helper used to register benchmarks.
+ */
 class auto_register {
 public:
     auto_register(const std::string& name, std::function<void(context*)> func) {
@@ -117,17 +143,18 @@ public:
 #define CONCAT(x, y) x ## y
 #define CONCAT2(x, y) CONCAT(x, y)
 
-//
+// The BENCHMARK macro is a helper for creating benchmark functions with a unique name, and automatically registering
+// them with the registration class.
 #define BENCHMARK(x) \
     static void CONCAT2(benchpress_, __LINE__)(benchpress::context*); \
     benchpress::auto_register CONCAT2(register_, __LINE__)((x), &CONCAT2(benchpress_, __LINE__)); \
     static void CONCAT2(benchpress_, __LINE__)(benchpress::context* b)
 
-//
+// This macro will prevent the compiler from removing a redundant code path which has no side-effects.
 #define DISABLE_REDUNDANT_CODE_OPT() { asm(""); }
 
 /*
- *
+ * The result class is responsible for producing a printable string representation of a benchmark run.
  */
 class result {
     size_t                   d_num_iterations;
@@ -170,7 +197,7 @@ public:
 };
 
 /*
- *
+ * The parallel_context class is responsible for providing a thread-safe context for parallel benchmark code.
  */
 class parallel_context {
     std::atomic_intmax_t d_num_iterations;
@@ -185,7 +212,7 @@ public:
 };
 
 /*
- *
+ * The context class is responsible for providing an interface for capturing benchmark metrics to benchmark functions.
  */
 class context {
     bool                                           d_timer_on;
@@ -309,7 +336,7 @@ private:
 };
 
 /*
- *
+ * The run_benchmarks function will run the registered benchmarks.
  */
 void run_benchmarks(const options& opts) {
     std::regex match_r(opts.get_bench());
@@ -326,7 +353,8 @@ void run_benchmarks(const options& opts) {
 } // namespace benchpress
 
 /*
- *
+ * If BENCHPRESS_CONFIG_MAIN is defined when the file is included then a main function will be emitted which provides a
+ * command-line parser and then executes run_benchmarks.
  */
 #ifdef BENCHPRESS_CONFIG_MAIN
 #include "cxxopts.hpp"

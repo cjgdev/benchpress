@@ -1,2 +1,8 @@
 # Macros
 
+## BENCHMARK(x)
+
+
+
+## DISABLE_REDUNDANT_CODE_OPT()
+
