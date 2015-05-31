@@ -14,9 +14,8 @@ Benchpress is a C++11 header only micro-benchmark framework.
 
 Christopher Gilbert
 
-* Web: [http://cjgilbert.me](http://cjgilbert.me)
 * Twitter: [@bigdatadev](https://twitter.com/bigdatadev)
-* Linkedin: [/in/christophergilbert](https://www.linkedin.com/in/christophergilbert)
+* Linkedin: [/in/christopherjohngilbert](https://www.linkedin.com/in/christopherjohngilbert)
 
 ## Copyright
 
