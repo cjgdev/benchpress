@@ -1,5 +1,7 @@
 # benchpress
 
+![Benchpress Logo](benchpress-logo.png)
+
 ## Get your code ripped!
 
 Benchpress is a C++11 header only micro-benchmark framework.
