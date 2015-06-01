@@ -1,5 +1,3 @@
-# benchpress
-
 ![Benchpress Logo](benchpress_logo.png)
 
 ## Get your code ripped!
