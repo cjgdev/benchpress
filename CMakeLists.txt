@@ -58,6 +58,4 @@ endif(ICU_FOUND)
 #
 # Recurse source sub-directories
 #
-ENABLE_TESTING (true)
 ADD_SUBDIRECTORY (src)
-ADD_SUBDIRECTORY (test)
