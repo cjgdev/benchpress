@@ -12,8 +12,9 @@ BENCHMARK("example", [](benchpress::context* ctx) {
 })
 ```
 
-Every benchmark function is passed a parameter `benchpress::context* b`. The target code must be executed n 
-(`b->get_num_iterations()`) times. The value n is adjusted until the benchmark runs long enough to be timed reliably.
+Every benchmark function is passed a parameter `benchpress::context*`. The target code must be executed n 
+(`benchpress::context::get_num_iterations()`) times. The value n is adjusted until the benchmark runs long enough to be 
+timed reliably.
 
 The example will produce the following output:
 
