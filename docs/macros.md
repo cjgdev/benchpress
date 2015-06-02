@@ -1,6 +1,6 @@
 # Macros
 
-## BENCHMARK(x)
+## BENCHMARK(x, f)
 
 
 

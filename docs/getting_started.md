@@ -5,11 +5,11 @@
 A simple benchmark looks like this:
 
 ```cpp
-BENCHMARK("example") {
-	for (size_t i = 0; i < b->get_num_iterations(); ++i) {
+BENCHMARK("example", [](benchpress::context* ctx) {
+	for (size_t i = 0; i < ctx->get_num_iterations(); ++i) {
 		std::cout << "hello" << std::endl;
 	}
-}
+})
 ```
 
 Every benchmark function is passed a parameter `benchpress::context* b`. The target code must be executed n 
@@ -26,24 +26,24 @@ The output shows that the code was run 1000000 times, and each cycle lasted 1165
 If a benchmark performs some expensive setup before running the timer may be reset:
 
 ```cpp
-BENCHMARK("expensive setup") {
+BENCHMARK("expensive setup", [](benchpress::context* ctx) {
 	setup_expensive();
-	b->reset_timer();
-	for (size_t i = 0; i < b->get_num_iterations(); ++i) {
+	ctx->reset_timer();
+	for (size_t i = 0; i < ctx->get_num_iterations(); ++i) {
 		test_func();
 	}
-}
+})
 ```
 
 If a benchmark needs to check performance in a parallel setting, it may use the run_parallel helper function, which is
 intended to be used with the -cpu command line option.
 
 ```cpp
-BENCHMARK("parallel benchmark") {
-	b->run_parallel([](benchpress::parallel_context* pb) {
-		while (pb->next()) {
+BENCHMARK("parallel benchmark", [](benchpress::context* ctx) {
+	ctx->run_parallel([](benchpress::parallel_context* pctx) {
+		while (pctx->next()) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 	}
-}
+})
 ```

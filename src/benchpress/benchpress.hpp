@@ -23,6 +23,7 @@
 #define BENCHPRESS_HPP
 
 #include <algorithm>   // max, min
+#include <atomic>      // atomic_intmax_t
 #include <chrono>      // high_resolution_timer, duration
 #include <functional>  // function
 #include <iomanip>     // setw
@@ -143,12 +144,9 @@ public:
 #define CONCAT(x, y) x ## y
 #define CONCAT2(x, y) CONCAT(x, y)
 
-// The BENCHMARK macro is a helper for creating benchmark functions with a unique name, and automatically registering
-// them with the registration class.
-#define BENCHMARK(x) \
-    static void CONCAT2(benchpress_, __LINE__)(benchpress::context*); \
-    benchpress::auto_register CONCAT2(register_, __LINE__)((x), &CONCAT2(benchpress_, __LINE__)); \
-    static void CONCAT2(benchpress_, __LINE__)(benchpress::context* b)
+// The BENCHMARK macro is a helper for creating benchmark functions and automatically registering them with the
+// registration class.
+#define BENCHMARK(x, f) benchpress::auto_register CONCAT2(register_, __LINE__)((x), (f));
 
 // This macro will prevent the compiler from removing a redundant code path which has no side-effects.
 #define DISABLE_REDUNDANT_CODE_OPT() { asm(""); }

@@ -3,10 +3,10 @@
 
 #include <chrono>
 
-BENCHMARK("multi-threaded example") {
-    b->run_parallel([](benchpress::parallel_context* pb) {
-        while (pb->next()) {
+BENCHMARK("multi-threaded example", [](benchpress::context* ctx) {
+    ctx->run_parallel([](benchpress::parallel_context* pctx) {
+        while (pctx->next()) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     });
-}
+})
