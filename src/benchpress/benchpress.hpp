@@ -369,6 +369,7 @@ int main(int argc, char** argv) {
                 ->default_value("1"))
             ("cpu", "specify the number of threads to use for parallel benchmarks", cxxopts::value<size_t>()
                 ->default_value(std::to_string(std::thread::hardware_concurrency())))
+            ("list", "list all available benchmarks")
             ("help", "print help")
         ;
         cmd_opts.parse(argc, argv);
@@ -384,6 +385,13 @@ int main(int argc, char** argv) {
         }
         if (cmd_opts.count("cpu")) {
             bench_opts.cpu(cmd_opts["cpu"].as<size_t>());
+        }
+        if (cmd_opts.count("list")) {
+            auto benchmarks = benchpress::registration::get_ptr()->get_benchmarks();
+            for (auto& info : benchmarks) {
+                std::cout << info.get_name() << std::endl;
+            }
+            exit(EXIT_SUCCESS);
         }
     } catch (const cxxopts::OptionException& e) {
         std::cout << "error parsing options: " << e.what() << std::endl;

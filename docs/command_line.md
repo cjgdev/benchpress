@@ -14,3 +14,7 @@ values provide increasingly significant statistical timing data.
 
 Provide a hint to the runtime to choose the number of threads to use in conjunction with `run_parallel`. The default is
 the number of threads reported by the OS.
+
+## -list
+
+Print a newline delimited list of all registered benchmarks and exit.
