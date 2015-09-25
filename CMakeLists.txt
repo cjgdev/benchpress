@@ -55,6 +55,8 @@ if(ICU_FOUND)
 	include_directories(${ICU_INCLUDE_DIRS})
 endif(ICU_FOUND)
 
+FIND_PACKAGE (Threads)
+
 #
 # Recurse source sub-directories
 #
