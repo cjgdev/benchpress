@@ -152,6 +152,21 @@ public:
 #define DISABLE_REDUNDANT_CODE_OPT() { asm(""); }
 
 /*
+ * Magical escape function with unique and mysterious properties to turn off the
+ * optimizer.
+ */
+static void escape(void *p) {
+    asm volatile("" : : "g"(p) : "memory");
+}
+
+/*
+ * 
+ */
+static void clobber() {
+    asm volatile("" : : : "memory");
+}
+
+/*
  * The result class is responsible for producing a printable string representation of a benchmark run.
  */
 class result {
