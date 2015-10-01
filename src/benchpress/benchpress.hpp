@@ -148,21 +148,47 @@ public:
 // registration class.
 #define BENCHMARK(x, f) benchpress::auto_register CONCAT2(register_, __LINE__)((x), (f));
 
-// This macro will prevent the compiler from removing a redundant code path which has no side-effects.
-#define DISABLE_REDUNDANT_CODE_OPT() { asm(""); }
-
 /*
- * Magical escape function with unique and mysterious properties to turn off the
- * optimizer.
+ * This function can be used to keep variables on the stack that would normally be optimised away
+ * by the compiler, without introducing any additional instructions or changing the behaviour of
+ * the program.
+ * 
+ * This function uses the Extended Asm syntax of GCC. The volatile keyword indicates that the 
+ * following instructions have some unknowable side-effect, and ensures that the code will neither 
+ * be moved, nor optimised away.
+ *
+ * AssemblerTemplate: No operands.
+ *
+ * OutputOperands: None.
+ *
+ * InputOperands: The "g" is a wildcard constraint which tells the compiler that it may choose what 
+ * to use for p (eg. a register OR a memory reference).
+ *
+ * Clobbers: The "memory" clobber tells the compiler that the assembly code performs reads or writes
+ * to the memory pointed to by one of the input parameters.
+ *
+ * Example usage:
+ *  std::vector<int> v;
+ *  v.reserve(10);
+ *  escape(v.data());
  */
-static void escape(void *p) {
+void escape(void *p) {
     asm volatile("" : : "g"(p) : "memory");
 }
 
 /*
- * 
+ * This function can be used to disable the optimiser. It has the effect of creating a read / write
+ * memory barrier for the compiler, meaning it does not assume that any values read from memory before
+ * the asm remain unchanged after that asm; it reloads them as needed.
+ *
+ * Example usage:
+ *  std::vector<int> v;
+ *  v.reserve(10);
+ *  escape(v.data());
+ *  v.push_back(42);
+ *  clobber(); // Ensure the integer pushed is read
  */
-static void clobber() {
+void clobber() {
     asm volatile("" : : : "memory");
 }
 

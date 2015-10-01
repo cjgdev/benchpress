@@ -64,3 +64,29 @@ BENCHMARK("multi-threaded example") {
     });
 }
 ```
+
+## void benchpress::escape(void *p)
+
+This function can be used to keep variables on the stack that would normally be optimised away
+by the compiler, without introducing any additional instructions or changing the behaviour of
+the program.
+
+```cpp
+std::vector<int> v;
+v.reserve(10);
+escape(v.data());
+```
+
+## void benchpress::clobber()
+
+This function can be used to disable the optimiser. It has the effect of creating a read / write
+memory barrier for the compiler, meaning it does not assume that any values read from memory before
+the asm remain unchanged after that asm; it reloads them as needed.
+
+```cpp
+std::vector<int> v;
+v.reserve(10);
+escape(v.data());
+v.push_back(42);
+clobber(); // Ensure the integer pushed is read
+```

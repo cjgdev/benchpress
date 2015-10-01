@@ -48,6 +48,11 @@ INCLUDE (EnableStdCXX11)
 ENABLE_STDCXX11 ()
 
 #
+# Do not omit frame pointers (this is required for perf to function correctly)
+#
+SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer")
+
+#
 # libicu is required for command line argument parsing
 #
 FIND_PACKAGE(ICU REQUIRED)
