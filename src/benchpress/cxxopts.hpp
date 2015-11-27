@@ -30,6 +30,14 @@ THE SOFTWARE.
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 #endif
 
+#ifdef _MSC_VER
+#define BENCH_NOEXCEPT _NOEXCEPT
+#define BENCH_CONSTEXPR
+#else
+#define BENCH_NOEXCEPT noexcept
+#define BENCH_CONSTEXPR constexpr
+#endif
+
 #include <exception>
 #include <iostream>
 #include <map>
@@ -268,7 +276,7 @@ namespace cxxopts
     }
 
     virtual const char*
-    what() const noexcept
+    what() const BENCH_NOEXCEPT
     {
       return m_message.c_str();
     }
@@ -300,7 +308,7 @@ namespace cxxopts
   {
     public:
     option_exists_error(const std::string& option)
-    : OptionSpecException(u8"Option ‘" + option + u8"’ already exists")
+    : OptionSpecException("Option ‘" + option + "’ already exists")
     {
     }
   };
@@ -309,7 +317,7 @@ namespace cxxopts
   {
     public:
     invalid_option_format_error(const std::string& format)
-    : OptionSpecException(u8"Invalid option format ‘" + format + u8"’")
+    : OptionSpecException("Invalid option format ‘" + format + "’")
     {
     }
   };
@@ -318,7 +326,7 @@ namespace cxxopts
   {
     public:
     option_not_exists_exception(const std::string& option)
-    : OptionParseException(u8"Option ‘" + option + u8"’ does not exist")
+    : OptionParseException("Option ‘" + option + "’ does not exist")
     {
     }
   };
@@ -327,7 +335,7 @@ namespace cxxopts
   {
     public:
     missing_argument_exception(const std::string& option)
-    : OptionParseException(u8"Option ‘" + option + u8"’ is missing an argument")
+    : OptionParseException("Option ‘" + option + "’ is missing an argument")
     {
     }
   };
@@ -336,7 +344,7 @@ namespace cxxopts
   {
     public:
     option_requires_argument_exception(const std::string& option)
-    : OptionParseException(u8"Option ‘" + option + u8"’ requires an argument")
+    : OptionParseException("Option ‘" + option + "’ requires an argument")
     {
     }
   };
@@ -350,7 +358,7 @@ namespace cxxopts
       const std::string& arg
     )
     : OptionParseException(
-        u8"Option ‘" + option + u8"’ does not take an argument, but argument‘"
+        "Option ‘" + option + "’ does not take an argument, but argument‘"
         + arg + "’ given")
     {
     }
@@ -360,7 +368,7 @@ namespace cxxopts
   {
     public:
     option_not_present_exception(const std::string& option)
-    : OptionParseException(u8"Option ‘" + option + u8"’ not present")
+    : OptionParseException("Option ‘" + option + "’ not present")
     {
     }
   };
@@ -373,7 +381,7 @@ namespace cxxopts
       const std::string& arg
     )
     : OptionParseException(
-      u8"Argument ‘" + arg + u8"’ failed to parse"
+      "Argument ‘" + arg + "’ failed to parse"
     )
     {
     }
@@ -424,16 +432,12 @@ namespace cxxopts
     }
 
     template <typename T>
-    struct value_has_arg
-    {
-      static constexpr bool value = true;
-    };
+    struct value_has_arg : public std::true_type
+    {};
 
     template <>
-    struct value_has_arg<bool>
-    {
-      static constexpr bool value = false;
-    };
+    struct value_has_arg<bool> : public std::false_type
+    {};
 
     template <typename T>
     class standard_value : public Value
@@ -796,8 +800,8 @@ namespace cxxopts
   namespace
   {
 
-    constexpr int OPTION_LONGEST = 30;
-    constexpr int OPTION_DESC_GAP = 2;
+    BENCH_CONSTEXPR int OPTION_LONGEST = 30;
+    BENCH_CONSTEXPR int OPTION_DESC_GAP = 2;
 
     std::basic_regex<char> option_matcher
       ("--([[:alnum:]][-_[:alnum:]]+)(=(.*))?|-([a-zA-Z]+)");
