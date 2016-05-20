@@ -172,9 +172,27 @@ public:
  *  v.reserve(10);
  *  escape(v.data());
  */
-void escape(void *p) {
-    asm volatile("" : : "g"(p) : "memory");
+#ifdef _MSC_VER
+
+#pragma optimize("", off)
+
+template <class T>
+void escape(T&& datum)
+{
+  // see here: http://stackoverflow.com/questions/28287064/how-not-to-optimize-away-mechanics-of-a-folly-function
+  datum = datum;
 }
+
+#pragma optimize("", on)
+
+#else
+
+inline void escape(void *p)
+{
+  asm volatile("" : : "g"(p) : "memory");
+}
+
+#endif
 
 /*
  * This function can be used to disable the optimiser. It has the effect of creating a read / write
@@ -188,9 +206,22 @@ void escape(void *p) {
  *  v.push_back(42);
  *  clobber(); // Ensure the integer pushed is read
  */
-void clobber() {
-    asm volatile("" : : : "memory");
+#ifdef _MSC_VER
+
+inline void clobber()
+{
+  // see here: http://stackoverflow.com/questions/14449141/the-difference-between-asm-asm-volatile-and-clobbering-memory
+  _ReadWriteBarrier();
 }
+
+#else
+
+inline void clobber()
+{
+  asm volatile("" : : : "memory");
+}
+
+#endif
 
 /*
  * The result class is responsible for producing a printable string representation of a benchmark run.
@@ -335,7 +366,7 @@ public:
         while (d_duration < d_benchtime && n < 1e9) {
             size_t last = n;
             if (get_ns_per_op() == 0) {
-                n = 1e9;
+                n = static_cast<size_t>(1e9);
             } else {
                 n = d_duration.count() / get_ns_per_op();
             }
