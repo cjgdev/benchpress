@@ -405,6 +405,7 @@ private:
     }
 };
 
+#ifdef BENCHPRESS_CONFIG_MAIN
 /*
  * The run_benchmarks function will run the registered benchmarks.
  */
@@ -419,6 +420,7 @@ void run_benchmarks(const options& opts) {
         }
     }
 }
+#endif
 
 } // namespace benchpress
 
