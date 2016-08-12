@@ -56,9 +56,7 @@ SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer")
 # libicu is required for command line argument parsing
 #
 FIND_PACKAGE(ICU REQUIRED)
-if(ICU_FOUND)
-	include_directories(${ICU_INCLUDE_DIRS})
-endif(ICU_FOUND)
+include_directories(${ICU_INCLUDE_DIRS})
 
 FIND_PACKAGE (Threads)
 
