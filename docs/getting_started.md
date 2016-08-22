@@ -6,14 +6,14 @@ A simple benchmark looks like this:
 
 ```cpp
 BENCHMARK("example", [](benchpress::context* ctx) {
-	for (size_t i = 0; i < ctx->get_num_iterations(); ++i) {
+	for (size_t i = 0; i < ctx->num_iterations(); ++i) {
 		std::cout << "hello" << std::endl;
 	}
 })
 ```
 
 Every benchmark function is passed a parameter `benchpress::context*`. The target code must be executed n 
-(`benchpress::context::get_num_iterations()`) times. The value n is adjusted until the benchmark runs long enough to be 
+(`benchpress::context::num_iterations()`) times. The value n is adjusted until the benchmark runs long enough to be 
 timed reliably.
 
 The example will produce the following output:
@@ -30,7 +30,7 @@ If a benchmark performs some expensive setup before running the timer may be res
 BENCHMARK("expensive setup", [](benchpress::context* ctx) {
 	setup_expensive();
 	ctx->reset_timer();
-	for (size_t i = 0; i < ctx->get_num_iterations(); ++i) {
+	for (size_t i = 0; i < ctx->num_iterations(); ++i) {
 		test_func();
 	}
 })
